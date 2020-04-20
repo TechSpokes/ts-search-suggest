@@ -79,8 +79,9 @@ class Core {
 
 		/** @var string $title Sanitized post title */
 		$title = sanitize_text_field(
-			htmlentities(
-				filter_input( INPUT_POST, 'title', FILTER_SANITIZE_STRING )
+			htmlspecialchars(
+				filter_input( INPUT_POST, 'title', FILTER_SANITIZE_STRING ),
+				ENT_NOQUOTES
 			)
 		);
 
@@ -112,7 +113,7 @@ class Core {
 			) );
 
 			if ( ! empty( $post_id ) ) {
-				wp_cache_set( $key, 'post', 21600 );
+				wp_cache_set( $key, $post_id, 'post', 21600 );
 			}
 		}
 
@@ -156,7 +157,6 @@ class Core {
 			)
 		);
 
-		/** @var \WP_Query $query */
 		$query = new WP_Query( $query_args );
 
 		if ( $query->have_posts() ) {
@@ -280,6 +280,7 @@ class Core {
 	 * @param mixed $value
 	 *
 	 * @return array
+	 * @noinspection PhpUnused
 	 */
 	public function sanitize_option_excluded_post_types( $value ) {
 		return array_filter( array_map( 'sanitize_key', (array) $value ) );
@@ -322,7 +323,6 @@ class Core {
 			array_walk( $input_attributes, function ( &$value, $key ) {
 				$value = sprintf( '%1$s="%2$s"', $key, esc_attr( $value ) );
 			} );
-			/** @noinspection PhpFormatFunctionParametersMismatchInspection */
 			/** @noinspection HtmlUnknownAttribute */
 			printf(
 				'<p><label for="%1$s"><input %2$s/> %3$s</label></p>',
