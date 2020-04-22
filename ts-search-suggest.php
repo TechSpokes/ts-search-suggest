@@ -11,7 +11,7 @@
  * Plugin Name: Search Suggest by TechSpokes Inc.
  * Plugin URI:  https://github.com/TechSpokes/ts-search-suggest.git
  * Description: Adds auto-suggest functionality to WordPress website search form.
- * Version:     0.0.1
+ * Version:     1.0.0
  * Author:      TechSpokes Inc.
  * Author URI:  https://techspokes.com
  * Text Domain: ts-search-suggest

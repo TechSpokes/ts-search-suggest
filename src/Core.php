@@ -77,17 +77,15 @@ class Core {
 			'id'
 		);
 
+		global $wpdb;
+
 		/** @var string $title Sanitized post title */
-		$title = sanitize_text_field(
-			htmlspecialchars(
-				filter_input( INPUT_POST, 'title', FILTER_SANITIZE_STRING ),
-				ENT_NOQUOTES
-			)
-		);
+		$title = stripslashes( html_entity_decode(
+			filter_input( INPUT_POST, 'title', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES ),
+			ENT_NOQUOTES
+		) );
 
 		if ( false === ( $post_id = wp_cache_get( $key = sprintf( 'tssspid_%s', md5( $title ) ), 'post' ) ) ) {
-
-			global $wpdb;
 
 			/** @var array $post_types Allowed post types */
 			$post_types = apply_filters(
@@ -100,17 +98,20 @@ class Core {
 
 			$in = join( ', ', array_fill( 0, count( $post_types ), '%s' ) );
 
+			/** @noinspection SqlDialectInspection */
 			/** @noinspection SqlNoDataSourceInspection */
-			$post_id = $wpdb->get_var( $wpdb->prepare(
-				"SELECT ID FROM {$wpdb->posts} WHERE post_title = %s AND post_status = %s and post_type IN( {$in} ) LIMIT 1",
-				array_merge(
-					array(
-						$title,
-						'publish'
-					),
-					array_values( $post_types )
+			$post_id = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT `ID` FROM {$wpdb->posts} WHERE `post_title` = %s AND `post_status` = %s AND `post_type` IN ( {$in} ) LIMIT 1;",
+					array_merge(
+						array(
+							$title,
+							'publish'
+						),
+						array_values( $post_types )
+					)
 				)
-			) );
+			);
 
 			if ( ! empty( $post_id ) ) {
 				wp_cache_set( $key, $post_id, 'post', 21600 );
@@ -161,8 +162,8 @@ class Core {
 
 		if ( $query->have_posts() ) {
 			$results = wp_list_pluck( $query->posts, 'post_title', 'ID' );
-			array_walk( $results, function ( &$title, $id ) {
-				$title = strip_tags( apply_filters( 'the_title', $title, $id ) );
+			array_walk( $results, function ( &$title ) {
+				$title = strip_tags( $title );
 			} );
 			echo join( "\n", $results );
 		}
