@@ -1,22 +1,19 @@
 <?php
 /**
- * Search Suggest by TechSpokes Inc.
- *
- * @package     TechSpokes\SearchSuggest
- * @author      TechSpokes Inc.
- * @copyright   2019 TechSpokes Inc. https://techspokes.com
- * @license     GPL-3.0+
- *
- * @wordpress-plugin
- * Plugin Name: Search Suggest by TechSpokes Inc.
- * Plugin URI:  https://github.com/TechSpokes/ts-search-suggest.git
- * Description: Adds auto-suggest functionality to WordPress website search form.
- * Version:     1.0.0
- * Author:      TechSpokes Inc.
- * Author URI:  https://techspokes.com
- * Text Domain: ts-search-suggest
- * License:     GPL-3.0+
- * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
+ * Plugin Name:         Search Suggest by TechSpokes
+ * Plugin URI:          https://github.com/TechSpokes/ts-search-suggest.git
+ * Description:         Adds auto-suggest functionality to WordPress website search form.
+ * Version:             1.0.2
+ * Requires at least:   6.0
+ * Requires PHP:        8.0
+ * Author:              TechSpokes
+ * Author URI:          https://www.techspokes.com
+ * License:             GPL v3 or later
+ * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
+ * Update URI:          https://www.techspokes.com
+ * Text Domain:         ts-search-suggest
+ * Domain Path:         /languages
+ * Requires Plugins:
  */
 
 // do not load this file directly

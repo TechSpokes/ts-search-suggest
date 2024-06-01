@@ -1,15 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: serge
- * Date: 4/5/2019
- * Time: 11:45 AM
- */
 
 namespace TechSpokes\SearchSuggest;
 
 
-use JetBrains\PhpStorm\NoReturn;
 use WP_Query;
 
 /**
@@ -71,8 +64,9 @@ class Core {
 	 * Prints suggestion URL in AJAX.
 	 *
 	 * @noinspection PhpUnnecessaryCurlyVarSyntaxInspection
+	 * @noinspection PhpNoReturnAttributeCanBeAddedInspection
 	 */
-	#[NoReturn] public function get_suggestion_url(): void {
+	public function get_suggestion_url(): void {
 
 		/** check ajax referer */
 		check_ajax_referer(
@@ -126,8 +120,10 @@ class Core {
 
 	/**
 	 * Prints search suggestions in AJAX.
+	 *
+	 * @noinspection PhpNoReturnAttributeCanBeAddedInspection
 	 */
-	#[NoReturn] public function ajax_get_search_suggestions(): void {
+	public function ajax_get_search_suggestions(): void {
 
 		/** check ajax referer */
 		check_ajax_referer(
