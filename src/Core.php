@@ -9,6 +9,7 @@
 namespace TechSpokes\SearchSuggest;
 
 
+use JetBrains\PhpStorm\NoReturn;
 use WP_Query;
 
 /**
@@ -22,14 +23,14 @@ class Core {
 	const BASENAME = 'search-suggest';
 
 	/**
-	 * @var \TechSpokes\SearchSuggest\Core $instance
+	 * @var \TechSpokes\SearchSuggest\Core|null $instance
 	 */
-	protected static $instance;
+	protected static ?Core $instance = null;
 
 	/**
 	 * @return \TechSpokes\SearchSuggest\Core
 	 */
-	public static function getInstance() {
+	public static function getInstance(): Core {
 
 		if ( ! ( self::$instance instanceof Core ) ) {
 			self::setInstance( new self() );
@@ -39,9 +40,9 @@ class Core {
 	}
 
 	/**
-	 * @param \TechSpokes\SearchSuggest\Core $instance
+	 * @param \TechSpokes\SearchSuggest\Core|null $instance
 	 */
-	protected static function setInstance( Core $instance ) {
+	protected static function setInstance( ?Core $instance = null ): void {
 
 		self::$instance = $instance;
 	}
@@ -68,8 +69,10 @@ class Core {
 
 	/**
 	 * Prints suggestion URL in AJAX.
+	 *
+	 * @noinspection PhpUnnecessaryCurlyVarSyntaxInspection
 	 */
-	public function get_suggestion_url() {
+	#[NoReturn] public function get_suggestion_url(): void {
 
 		/** check ajax referer */
 		check_ajax_referer(
@@ -79,11 +82,7 @@ class Core {
 
 		global $wpdb;
 
-		/** @var string $title Sanitized post title */
-		$title = stripslashes( html_entity_decode(
-			filter_input( INPUT_POST, 'title', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES ),
-			ENT_NOQUOTES
-		) );
+		$title = is_string( $_POST['title'] ?? null ) ? sanitize_text_field( $_POST['title'] ) : '';
 
 		if ( false === ( $post_id = wp_cache_get( $key = sprintf( 'tssspid_%s', md5( $title ) ), 'post' ) ) ) {
 
@@ -91,7 +90,7 @@ class Core {
 			$post_types = apply_filters(
 				'search_suggest_allowed_post_types',
 				array_diff(
-					get_post_types( array( 'public' => true ), 'names', 'and' ),
+					get_post_types( array( 'public' => true ) ),
 					array_filter( (array) get_option( 'ts_search_suggest_excluded_post_types' ) )
 				)
 			);
@@ -128,7 +127,7 @@ class Core {
 	/**
 	 * Prints search suggestions in AJAX.
 	 */
-	public function ajax_get_search_suggestions() {
+	#[NoReturn] public function ajax_get_search_suggestions(): void {
 
 		/** check ajax referer */
 		check_ajax_referer(
@@ -136,13 +135,13 @@ class Core {
 			'id'
 		);
 
-		$s = sanitize_text_field( filter_input( INPUT_GET, 'q', FILTER_SANITIZE_STRING ) );
+		$s = is_string( $_GET['q'] ?? null ) ? sanitize_text_field( $_GET['q'] ) : '';
 
 		/** @var array $post_types Allowed post types */
 		$post_types = apply_filters(
 			'search_suggest_allowed_post_types',
 			array_diff(
-				get_post_types( array( 'public' => true ), 'names', 'and' ),
+				get_post_types( array( 'public' => true ) ),
 				array_filter( (array) get_option( 'ts_search_suggest_excluded_post_types' ) )
 			)
 		);
@@ -175,7 +174,7 @@ class Core {
 	/**
 	 * Enqueues scripts from inside the search form.
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts(): void {
 
 		/** enqueue javascript */
 		wp_enqueue_script( self::BASENAME );
@@ -203,7 +202,7 @@ class Core {
 	/**
 	 * Registers scripts.
 	 */
-	public function register_scripts() {
+	public function register_scripts(): void {
 
 		/** register javascript */
 		wp_register_script(
@@ -225,15 +224,14 @@ class Core {
 				dirname( __FILE__ )
 			),
 			null,
-			null,
-			'all'
+			null
 		);
 	}
 
 	/**
 	 * Registers UI.
 	 */
-	public function register_ui() {
+	public function register_ui(): void {
 
 		/** add settings page */
 		add_options_page(
@@ -257,15 +255,14 @@ class Core {
 			'excluded-post-types',
 			__( 'Excluded post types', 'ts-search-suggest' ),
 			array( $this, 'excluded_post_types_settings_field' ),
-			self::BASENAME,
-			'default'
+			self::BASENAME
 		);
 	}
 
 	/**
 	 * Registers settings.
 	 */
-	public function register_settings() {
+	public function register_settings(): void {
 		register_setting(
 			self::BASENAME,
 			'ts_search_suggest_excluded_post_types',
@@ -283,14 +280,14 @@ class Core {
 	 * @return array
 	 * @noinspection PhpUnused
 	 */
-	public function sanitize_option_excluded_post_types( $value ) {
+	public function sanitize_option_excluded_post_types( mixed $value ): array {
 		return array_filter( array_map( 'sanitize_key', (array) $value ) );
 	}
 
 	/**
 	 * Displays settings page.
 	 */
-	public function settings_page() {
+	public function settings_page(): void {
 		/** @noinspection HtmlUnknownTarget */
 		printf(
 			'<div class="wrap %1$s-settings-page">%2$s<form action="%3$s" method="post">',
@@ -307,8 +304,8 @@ class Core {
 	/**
 	 * Displays excluded post types settings field.
 	 */
-	public function excluded_post_types_settings_field() {
-		$post_types = get_post_types( array( 'public' => true ), 'objects', 'and' );
+	public function excluded_post_types_settings_field(): void {
+		$post_types = get_post_types( array( 'public' => true ), 'objects' );
 		$current    = array_filter( (array) get_option( 'ts_search_suggest_excluded_post_types' ) );
 		/** @var \WP_Post_Type $post_type */
 		foreach ( $post_types as $post_type ) {
@@ -345,9 +342,8 @@ class Core {
 	 *
 	 * @return string
 	 */
-	protected function maybe_minify_resource( $path = '' ) {
+	protected function maybe_minify_resource( string $path = '' ): string {
 		return defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? $path
 			: preg_replace( '/\.(css|js)/i', '.min.$1', $path );
 	}
-
 }

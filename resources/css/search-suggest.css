@@ -1,3 +1,4 @@
+/*noinspection CssUnusedSymbol*/
 .ac_results {
     background-color: #fff;
     border: 1px solid #808080;
@@ -16,11 +17,13 @@
     white-space: nowrap;
 }
 
+/*noinspection CssUnusedSymbol*/
 .ac_over {
     background-color: #CCCCCC;
     cursor: pointer;
 }
 
+/*noinspection CssUnusedSymbol*/
 .ac_match {
     text-decoration: underline;
 }
