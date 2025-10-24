@@ -187,7 +187,8 @@ class Core {
 				),
 				'selectUrl'      => admin_url( 'admin-ajax.php' ),
 				'selectAction'   => 'get_suggestion_url',
-				'selectId'       => wp_create_nonce( sprintf( '%s-select', self::BASENAME ) )
+				'selectId'       => wp_create_nonce( sprintf( '%s-select', self::BASENAME ) ),
+				'suggestDelay'   => absint( get_option( 'ts_search_suggest_suggest_delay', 750 ) )
 			)
 		);
 
@@ -253,12 +254,20 @@ class Core {
 			array( $this, 'excluded_post_types_settings_field' ),
 			self::BASENAME
 		);
+
+		add_settings_field(
+			'suggest-delay',
+			__( 'Suggest delay', 'ts-search-suggest' ),
+			array( $this, 'suggest_delay_settings_field' ),
+			self::BASENAME
+		);
 	}
 
 	/**
 	 * Registers settings.
 	 */
 	public function register_settings(): void {
+		// excluded post types setting
 		register_setting(
 			self::BASENAME,
 			'ts_search_suggest_excluded_post_types',
@@ -266,6 +275,16 @@ class Core {
 				'type'              => 'string',
 				'description'       => __( 'Serialized array of post type names excluded from search suggestion', 'ts-search-suggest' ),
 				'sanitize_callback' => array( $this, 'sanitize_option_excluded_post_types' )
+			)
+		);
+		// the suggest delay setting
+		register_setting(
+			self::BASENAME,
+			'ts_search_suggest_suggest_delay',
+			array(
+				'type'              => 'integer',
+				'description'       => __( 'Delay in milliseconds before fetching suggestions', 'ts-search-suggest' ),
+				'sanitize_callback' => 'absint'
 			)
 		);
 	}
@@ -328,6 +347,18 @@ class Core {
 		printf(
 			'<p class="description">%s</p>',
 			__( 'If checked, the posts of that type will be excluded from the suggestions in search form', 'ts-search-suggest' )
+		);
+	}
+
+	/**
+	 * Displays suggest delay settings field.
+	 */
+	public function suggest_delay_settings_field(): void {
+		$delay = absint( get_option( 'ts_search_suggest_suggest_delay', 750 ) );
+		printf(
+			'<input type="number" id="suggest-delay" name="ts_search_suggest_suggest_delay" value="%1$s" class="small-text" min="0"/> <span class="description">%2$s</span>',
+			esc_attr( $delay ),
+			__( 'Delay in milliseconds before fetching suggestions', 'ts-search-suggest' )
 		);
 	}
 

@@ -3,6 +3,7 @@ jQuery(document).ready(function ($) {
     // noinspection JSUnresolvedFunction,JSUnresolvedVariable,JSUnusedGlobalSymbols
     $('#s,[name="s"]').suggest(searchSuggest.suggestionsUrl, {
         minchars: 3,
+        delay: searchSuggest.suggestDelay,
         onSelect: function () {
             // noinspection JSUnresolvedFunction
             let $form = $(this).parents('form');
